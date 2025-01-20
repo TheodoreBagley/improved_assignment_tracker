@@ -59,15 +59,14 @@ class App(tk.Tk):
                     day_canvas.create_window(78, 13, window=day_label)
                     events = get_events(date_str)
                     if events:
-                        event_canvas = tk.Canvas(day_canvas, height=34, width=140)
-                        day_canvas.create_window(78, 45, window=event_canvas)
+                        events_canvas = tk.Canvas(day_canvas, height=34, width=140)
+                        day_canvas.create_window(78, 45, window=events_canvas)
                         for event_idx, event in enumerate(events):
-                            event = tk.Label(event_canvas, text=event["task"], font=("Helvetica", 10))
-                            if event_idx==0:
-                                event_canvas.create_window(62, 10, window=event)
-                            else:
-                                space = event_idx*6
-                                event_canvas.create_window(62, space, window=event)
+                            event_frame = tk.Frame(events_canvas)
+                            event_frame.grid(row=event_idx+1, column=0)
+                            event = tk.Label(event_frame, text=event["task"], font=("Helvetica", 10))
+                            event.pack(side="left")
+
 
                     add_event_button = tk.Button(day_canvas, text="Add Assignment",
                                              command=lambda date=date_str: self.open_event_dialog(date))
