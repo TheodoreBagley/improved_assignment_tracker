@@ -1,9 +1,16 @@
+import os
+import sys
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 import calendar
 from datetime import datetime
 from logic import load_events, save_events, toggle_event, remove_event, add_event, get_events
 
+
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 class App(tk.Tk):
     def __init__(self):
@@ -59,13 +66,21 @@ class App(tk.Tk):
                     day_canvas.create_window(78, 13, window=day_label)
                     events = get_events(date_str)
                     if events:
-                        events_canvas = tk.Canvas(day_canvas, height=34, width=140)
-                        day_canvas.create_window(78, 45, window=events_canvas)
+                        event_frame = tk.Frame(day_canvas)
+                        event_frame.place(x=2, y=28, width=frame_length, height=36)
+                        events_canvas = tk.Canvas(event_frame, height=34, width=frame_length)
+                        day_canvas.pack(side="left", fill="both", expand=True)
+                        scrollbar = tk.Scrollbar(event_frame, orient="vertical", command=events_canvas.yview)
+                        scrollbar.pack(side="right", fill="y")
+                        events_canvas.config(yscrollcommand=scrollbar.set)
+                        event_holder = tk.Frame(events_canvas)
+                        events_canvas.create_window(0, 0, window=event_holder, anchor="nw")
                         for event_idx, event in enumerate(events):
-                            event_frame = tk.Frame(events_canvas)
-                            event_frame.grid(row=event_idx+1, column=0)
-                            event = tk.Label(event_frame, text=event["task"], font=("Helvetica", 10))
-                            event.pack(side="left")
+                            event = tk.Label(event_holder, text=event["task"], font=("Helvetica", 10))
+                            event.grid(row=event_idx, column=0, sticky="w", padx=5, pady=5)
+                        event_holder.update_idletasks()
+                        events_canvas.config(scrollregion=events_canvas.bbox("all"))
+
 
 
                     add_event_button = tk.Button(day_canvas, text="Add Assignment",

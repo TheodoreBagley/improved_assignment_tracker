@@ -1,0 +1,7 @@
+events_canvas = tk.Canvas(day_canvas, height=34, width=140)
+                        day_canvas.create_window(78, 45, window=events_canvas)
+                        for event_idx, event in enumerate(events):
+                            event_frame = tk.Frame(events_canvas)
+                            event_frame.grid(row=event_idx+1, column=0)
+                            event = tk.Label(event_frame, text=event["task"], font=("Helvetica", 10))
+                            event.pack(side="left")
